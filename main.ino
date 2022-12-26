@@ -3,8 +3,13 @@
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 
-String ssidList[2] = {"TP-LINK", "dlink"};
-String passwordList[2] = {"arafibi2020", "Mpupin2019"};
+//String ssidList[10]; = {"TP-LINK", "dlink", "ALHN-ECE8"};
+//String passwordList[10]; = {"arafibi2020", "Mpupin2019", "B3RZEfpTHs"};
+String ssidList[1];
+String passwordList[1];
+String ssids[10] = {};
+int numOfSSIDs = 0;
+String strIndex = "";
 
 const char *host = "smart-city-api.netlify.app";
 const int httpsPort = 443;
@@ -19,11 +24,13 @@ void setup() {
   Serial.begin(115200);
   delay(3000);
   Serial.println("");
-  Serial.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+  //Serial.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 
   int WiFiIndex = -1;
   int n = WiFi.scanNetworks();
   for (int i = 0; i < n; i++){
+    ssids[i] = WiFi.SSID(i);
+    numOfSSIDs++;
     for(int x = 0; x < sizeof(ssidList); x++){
       if(WiFi.SSID(i) == ssidList[x]){
         WiFiIndex = x;
@@ -38,8 +45,30 @@ void setup() {
   }
   else{
     Serial.println("No Known Networks Found!");
+    for(int i = 0; i < numOfSSIDs; i++){
+      Serial.print("\t");
+      Serial.print(i);
+      Serial.println(". " + ssids[i]);
+    }
+    while(true){
+      if(Serial.available()){
+        strIndex = strIndex + Serial.readString();
+        Serial.println("Password for " + ssids[strIndex.toInt()] + ": ");
+        break;
+      }
+    }
+    while(true){
+      if(Serial.available()){
+        String password = Serial.readString();
+        Serial.print("Connecting to ");
+        Serial.print(ssids[strIndex.toInt()]);
+        Serial.print(" using ");
+        Serial.println(password);
+        connect(ssids[strIndex.toInt()].c_str(), password.c_str());
+        break;  
+      }
+    }
   }
-  
 }
 
 /*************************************************************************************/
