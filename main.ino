@@ -7,9 +7,15 @@
 //String passwordList[10]; = {"arafibi2020", "Mpupin2019", "B3RZEfpTHs"};
 String ssidList[1];
 String passwordList[1];
+
 String ssids[10] = {};
 int numOfSSIDs = 0;
+bool connected = false;
 String strIndex = "";
+
+int co2 = -1;
+int o2 = -1;
+int ch4 = -1;
 
 const char *host = "smart-city-api.netlify.app";
 const int httpsPort = 443;
@@ -24,7 +30,7 @@ void setup() {
   Serial.begin(115200);
   delay(3000);
   Serial.println("");
-  //Serial.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+  Serial.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 
   int WiFiIndex = -1;
   int n = WiFi.scanNetworks();
@@ -57,7 +63,7 @@ void setup() {
         break;
       }
     }
-    while(true){
+    while(!connected){
       if(Serial.available()){
         String password = Serial.readString();
         Serial.print("Connecting to ");
@@ -65,7 +71,8 @@ void setup() {
         Serial.print(" using ");
         Serial.println(password);
         connect(ssids[strIndex.toInt()].c_str(), password.c_str());
-        break;  
+        Serial.print("\n");
+        connected = true;
       }
     }
   }
@@ -141,6 +148,30 @@ void post(){
   httpsClient.setFingerprint(fingerprint);
   httpsClient.setTimeout(15000);
   delay(1000);
+
+  Serial.print("CO2: ");
+  while(co2 == -1){
+    if(Serial.available()){
+      co2 = Serial.readString().toInt();
+      Serial.println(co2);
+    }
+  }
+  Serial.print("O2: ");
+  while(o2 == -1){
+    if(Serial.available()){
+      o2 = Serial.readString().toInt();
+      Serial.println(o2);
+    }
+  }
+  Serial.print("CH4: ");
+  while(ch4 == -1){
+    if(Serial.available()){
+      ch4 = Serial.readString().toInt();
+      Serial.println(ch4);
+    }
+  }
+  //String Link = "/.netlify/functions/post/co2=22&o2=108&ch4=6";
+  String Link = "/.netlify/functions/post/co2=" + String(co2) + "&o2=" + String(o2) + "&ch4=" + String(ch4);
   
   int r=0;
   while((!httpsClient.connect(host, httpsPort)) && (r < 30)){
@@ -148,8 +179,7 @@ void post(){
       Serial.print(".");
       r++;
   }
-
-  String Link = "/.netlify/functions/post/co2=22&o2=108&ch4=6";
+  
   Serial.print("\t -requesting URL: ");
   Serial.println(host+Link);
 
@@ -170,6 +200,11 @@ void post(){
   String statusData = String(doc["data"]);
   Serial.println("\t -Data sent: " + statusData);
 }
+
+/*************************************************************************************/
+/* CONNECT */
+/*************************************************************************************/
+
 void connect(const char *ssid, const char *password){
   WiFi.mode(WIFI_OFF);
   delay(1000);
