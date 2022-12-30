@@ -3,10 +3,10 @@
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 
-//String ssidList[10]; = {"TP-LINK", "dlink", "ALHN-ECE8"};
-//String passwordList[10]; = {"arafibi2020", "Mpupin2019", "B3RZEfpTHs"};
-String ssidList[1];
-String passwordList[1];
+String ssidList[10] = {"TP-LINK", "dlink", "ALHN-ECE8"};
+String passwordList[10] = {"arafibi2020", "Mpupin2019", "B3RZEfpTHs"};
+//String ssidList[1];
+//String passwordList[1];
 
 String ssids[10] = {};
 int numOfSSIDs = 0;
