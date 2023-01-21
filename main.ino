@@ -213,11 +213,7 @@ void connect(const char *ssid, const char *password){
   WiFi.mode(WIFI_STA);
   
   WiFi.begin(ssid, password);
-  Serial.print("Connecting using: ");
-  Serial.print("SSID: ");
-  Serial.println(ssid);
-  Serial.print("Password: ");
-  Serial.println(password);
+  Serial.print("Connecting");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
