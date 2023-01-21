@@ -3,7 +3,7 @@
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 
-String ssidList[10] = {"TP-LINK", "dlink", "ALHN-ECE8"};
+String ssidList[10] = {"TPLINK", "dlink", "ALHNECE8"};
 String passwordList[10] = {"arafibi2020", "Mpupin2019", "B3RZEfpTHs"};
 //String ssidList[1];
 //String passwordList[1];
@@ -19,7 +19,7 @@ int ch4 = -1;
 
 const char *host = "smart-city-api.netlify.app";
 const int httpsPort = 443;
-const char fingerprint[] PROGMEM = "C2 91 4B FE F1 7A 3B 5F E8 7C B8 81 98 C2 5A BA 7B 7D 92 45";
+const char fingerprint[] PROGMEM = "90 75 F4 E0 1B 98 9D 01 B0 58 B3 E3 3B DB DA E0 24 FA 9F 82";
 String command = "";
 
 /*************************************************************************************/
@@ -59,10 +59,10 @@ void setup() {
     while(true){
       if(Serial.available()){
         strIndex = strIndex + Serial.readString();
-        Serial.println("Password for " + ssids[strIndex.toInt()] + ": ");
         break;
       }
     }
+    Serial.println("Password for " + ssids[strIndex.toInt()] + ": ");
     while(!connected){
       if(Serial.available()){
         String password = Serial.readString();
@@ -73,6 +73,7 @@ void setup() {
         connect(ssids[strIndex.toInt()].c_str(), password.c_str());
         Serial.print("\n");
         connected = true;
+        break;
       }
     }
   }
@@ -199,6 +200,7 @@ void post(){
   deserializeJson(doc, json);
   String statusData = String(doc["data"]);
   Serial.println("\t -Data sent: " + statusData);
+  o2, co2, ch4 = -1;
 }
 
 /*************************************************************************************/
@@ -211,7 +213,11 @@ void connect(const char *ssid, const char *password){
   WiFi.mode(WIFI_STA);
   
   WiFi.begin(ssid, password);
-  Serial.print("Connecting");
+  Serial.print("Connecting using: ");
+  Serial.print("SSID: ");
+  Serial.println(ssid);
+  Serial.print("Password: ");
+  Serial.println(password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
